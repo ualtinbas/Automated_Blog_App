@@ -1,0 +1,64 @@
+services:
+  frontend:
+    build:
+      context: frontend
+    ports:
+      - 5173:5173
+    stdin_open: true
+    volumes:
+      - ./frontend:/Pc/source/react-app
+      - /Pc/source/react-app/node_modules
+    restart: always
+    networks:
+      - react-express
+    depends_on:
+      - backend
+
+  backend:
+    restart: always
+    build:
+      context: backend
+    volumes:
+      - ./backend:/Pc/source/react-app
+      - /Pc/source/react-app/node_modules
+    depends_on:
+      - mongo
+      - ai
+    networks:
+      - express-mongo
+      - react-express
+    environment:
+      - PORT=3000
+    ports:
+      - 3000:3000
+    expose: 
+      - 3000
+  mongo:
+    restart: always
+    image: mongo:4.2.0
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - express-mongo
+    expose:
+      - 27017
+  ai:
+    build: ./ai
+    restart: always
+    networks:
+      - react-express
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]
+    environment:
+      - MODEL_ID=Qwen/Qwen2.5-0.5B-Instruct
+      - HF_TOKEN=${HF_TOKEN}
+    ports:
+      - "8000:8000"
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+networks:
+  react-express:
+  express-mongo:
+
+volumes:
+  mongo_data:
+  hf_cache:

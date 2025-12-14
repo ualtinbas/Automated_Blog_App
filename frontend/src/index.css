@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --breakpoint-xs: 25rem;
+}
+
+body{
+    background-color: blanchedalmond;
+    width: 100vw;
+    overflow-x: hidden;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+img {
+  border-radius: 25%;
+}
